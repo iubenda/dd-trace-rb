@@ -5,7 +5,7 @@ require 'ddtrace'
 require 'ddtrace/contrib/dalli/patcher'
 
 RSpec.describe 'Dalli instrumentation' do
-  let(:test_host) { ENV.fetch('TEST_MEMCACHED_PORT', '127.0.0.1') }
+  let(:test_host) { ENV.fetch('TEST_MEMCACHED_HOST', '127.0.0.1') }
   let(:test_port) { ENV.fetch('TEST_MEMCACHED_PORT', '11211') }
 
   let(:client) { ::Dalli::Client.new("#{test_host}:#{test_port}") }
@@ -18,7 +18,9 @@ RSpec.describe 'Dalli instrumentation' do
 
   # Enable the test tracer
   before(:each) do
-    Datadog.configure { |c| c.use :dalli }
+    Datadog.configure do |c|
+      c.use :dalli
+    end
     pin.tracer = tracer
   end
 
