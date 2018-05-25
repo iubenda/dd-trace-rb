@@ -17,6 +17,7 @@ module Datadog
           end
         end
         option :orm_service_name
+        option :trace_events, default: [:instantiation, :sql]
         option :tracer, default: Datadog.tracer do |value|
           (value || Datadog.tracer).tap do |v|
             # Make sure to update tracers of all subscriptions
@@ -38,7 +39,7 @@ module Datadog
         def patch
           if !@patched && defined?(::ActiveRecord)
             begin
-              Events.subscribe!
+              Events.subscribe!(get_option(:trace_events))
               @patched = true
             rescue StandardError => e
               Datadog::Tracer.log.error("Unable to apply Active Record integration: #{e}")

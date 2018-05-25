@@ -21,8 +21,13 @@ module Datadog
           all.collect(&:subscriptions).collect(&:to_a).flatten
         end
 
-        def subscribe!
-          all.each(&:subscribe!)
+        def subscribe!(events)
+          return unless events
+
+          events
+            .map(&:capitalize)
+            .map(&Events.method(:const_get))
+            .each(&:subscribe!)
         end
       end
     end
